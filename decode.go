@@ -14,7 +14,8 @@ func Decode(code byte, b []byte) (Option, error) {
 		o := new(TimeOffset)
 		err := o.Decode(b)
 		return o, err
-	case 3, 4, 5, 6, 7, 8, 9, 10, 11, 41, 42, 44, 45, 48, 49, 65, 68, 69, 70, 71, 72, 73, 74, 75, 76, 92, 112, 118, 138, 150: // []net.IP
+	case 3, 4, 5, 6, 7, 8, 9, 10, 11, 41, 42, 44, 45, 48, 49, 65,
+		68, 69, 70, 71, 72, 73, 74, 75, 76, 92, 112, 118, 138, 150:
 		o := new(IPv4s)
 		err := o.Decode(b)
 		return o, err
@@ -51,7 +52,7 @@ func Decode(code byte, b []byte) (Option, error) {
 		err := o.Decode(b)
 		return o, err
 	case 255:
-		o := new(Padding)
+		o := new(End)
 		err := o.Decode(b)
 		return o, err
 	default:
