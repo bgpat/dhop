@@ -11,7 +11,8 @@ import (
 type Option interface {
 	Encode() []byte
 	Decode([]byte) error
-	String() string
+	Marshal() string
+	Unmarshal([]byte) error
 }
 
 type String string
@@ -60,8 +61,13 @@ func (o *String) Decode(b []byte) error {
 	return nil
 }
 
-func (o *String) String() string {
+func (o *String) Marshal() string {
 	return string(*o)
+}
+
+func (o *String) Unmarshal(b []byte) error {
+	*o = String(b)
+	return nil
 }
 
 func (o *Boolean) Encode() []byte {
@@ -85,11 +91,21 @@ func (o *Boolean) Decode(b []byte) error {
 	return nil
 }
 
-func (o *Boolean) String() string {
+func (o *Boolean) Marshal() string {
 	if *o {
 		return "true"
 	}
 	return "false"
+}
+
+func (o *Boolean) Unmarshal(b []byte) error {
+	s := strings.TrimSpace(strings.ToLower(string(b)))
+	if s == "" || s == "0" || s == "false" || s == "off" || s == "f" {
+		*o = false
+	} else {
+		*o = true
+	}
+	return nil
 }
 
 func (o *Byte) Encode() []byte {
@@ -104,8 +120,17 @@ func (o *Byte) Decode(b []byte) error {
 	return nil
 }
 
-func (o *Byte) String() string {
+func (o *Byte) Marshal() string {
 	return strconv.Itoa(int(*o))
+}
+
+func (o *Byte) Unmarshal(b []byte) error {
+	n, err := strconv.ParseUint(strings.TrimSpace(string(b)), 10, 8)
+	if err != nil {
+		return err
+	}
+	*o = Byte(n)
+	return nil
 }
 
 func (o *Size) Encode() []byte {
@@ -123,8 +148,17 @@ func (o *Size) Decode(b []byte) error {
 	return nil
 }
 
-func (o *Size) String() string {
+func (o *Size) Marshal() string {
 	return strconv.Itoa(int(*o))
+}
+
+func (o *Size) Unmarshal(b []byte) error {
+	n, err := strconv.ParseUint(strings.TrimSpace(string(b)), 10, 16)
+	if err != nil {
+		return err
+	}
+	*o = Size(n)
+	return nil
 }
 
 func (o *Sizes) Encode() []byte {
@@ -154,12 +188,30 @@ func (o *Sizes) Decode(b []byte) error {
 	return nil
 }
 
-func (o *Sizes) String() string {
+func (o *Sizes) Marshal() string {
 	s := make([]string, len(*o))
 	for i, n := range *o {
-		s[i] = n.String()
+		s[i] = n.Marshal()
 	}
 	return strings.Join(s, ",")
+}
+
+func (o *Sizes) Unmarshal(b []byte) error {
+	sizes := make(Sizes, 0)
+	for _, s := range strings.Split(string(b), ",") {
+		for _, s := range strings.Split(strings.TrimSpace(s), " ") {
+			if s == "" {
+				continue
+			}
+			n, err := strconv.ParseUint(strings.TrimSpace(s), 10, 16)
+			if err != nil {
+				return err
+			}
+			sizes = append(sizes, Size(n))
+		}
+	}
+	*o = sizes
+	return nil
 }
 
 func (o *IPv4) Encode() []byte {
@@ -174,8 +226,21 @@ func (o *IPv4) Decode(b []byte) error {
 	return nil
 }
 
-func (o *IPv4) String() string {
+func (o *IPv4) Marshal() string {
 	return net.IP(*o).String()
+}
+
+func (o *IPv4) Unmarshal(b []byte) error {
+	ip := make(IPv4, 4)
+	for i, s := range strings.SplitN(strings.TrimSpace(string(b)), ".", 4) {
+		n, err := strconv.ParseUint(s, 10, 8)
+		if err != nil {
+			return err
+		}
+		ip[i] = byte(n)
+	}
+	*o = ip
+	return nil
 }
 
 func (o *IPv4s) Encode() []byte {
@@ -201,12 +266,30 @@ func (o *IPv4s) Decode(b []byte) error {
 	return nil
 }
 
-func (o *IPv4s) String() string {
+func (o *IPv4s) Marshal() string {
 	s := make([]string, len(*o))
 	for i, ip := range *o {
-		s[i] = ip.String()
+		s[i] = ip.Marshal()
 	}
 	return strings.Join(s, ",")
+}
+
+func (o *IPv4s) Unmarshal(b []byte) error {
+	ips := make(IPv4s, 0)
+	for _, s := range strings.Split(string(b), ",") {
+		for _, s := range strings.Split(strings.TrimSpace(s), " ") {
+			if s == "" {
+				continue
+			}
+			ip := IPv4{}
+			if err := ip.Unmarshal([]byte(s)); err != nil {
+				return err
+			}
+			ips = append(ips, ip)
+		}
+	}
+	*o = ips
+	return nil
 }
 
 func (o *IPv4Pair) Encode() []byte {
@@ -228,12 +311,29 @@ func (o *IPv4Pair) Decode(b []byte) error {
 	return nil
 }
 
-func (o *IPv4Pair) String() string {
+func (o *IPv4Pair) Marshal() string {
 	s := make([]string, len(*o))
 	for i, ip := range *o {
-		s[i] = ip.String()
+		s[i] = ip.Marshal()
 	}
 	return strings.Join(s, " ")
+}
+
+func (o *IPv4Pair) Unmarshal(b []byte) error {
+	pair := IPv4Pair{}
+	i := 0
+	for _, s := range strings.Split(string(b), ",") {
+		for _, s := range strings.SplitN(strings.TrimSpace(s), " ", 2) {
+			ip := IPv4{}
+			if err := ip.Unmarshal([]byte(s)); err != nil {
+				return err
+			}
+			pair[i] = ip
+			i++
+		}
+	}
+	*o = pair
+	return nil
 }
 
 func (o *IPv4Pairs) Encode() []byte {
@@ -262,12 +362,28 @@ func (o *IPv4Pairs) Decode(b []byte) error {
 	return nil
 }
 
-func (o *IPv4Pairs) String() string {
+func (o *IPv4Pairs) Marshal() string {
 	s := make([]string, len(*o))
 	for i, p := range *o {
-		s[i] = p.String()
+		s[i] = p.Marshal()
 	}
 	return strings.Join(s, ",")
+}
+
+func (o *IPv4Pairs) Unmarshal(b []byte) error {
+	pairs := make(IPv4Pairs, 0)
+	for _, s := range strings.Split(string(b), ",") {
+		if s == "" {
+			continue
+		}
+		pair := IPv4Pair{}
+		if err := pair.Unmarshal([]byte(strings.TrimSpace(s))); err != nil {
+			return err
+		}
+		pairs = append(pairs, pair)
+	}
+	*o = pairs
+	return nil
 }
 
 func (o *Route) Encode() []byte {
@@ -301,8 +417,23 @@ func (o *Route) Decode(b []byte) error {
 	return nil
 }
 
-func (o *Route) String() string {
+func (o *Route) Marshal() string {
 	return fmt.Sprintf("%s %s", o.Source.String(), o.Destination.String())
+}
+
+func (o *Route) Unmarshal(b []byte) error {
+	pair := strings.SplitN(strings.TrimSpace(string(b)), " ", 2)
+	_, src, err := net.ParseCIDR(pair[0])
+	if err != nil {
+		return err
+	}
+	dst := IPv4{}
+	if err := dst.Unmarshal([]byte(pair[1])); err != nil {
+		return err
+	}
+	o.Source = *src
+	o.Destination = net.IP(dst)
+	return nil
 }
 
 func (o *Routes) Encode() []byte {
@@ -332,12 +463,28 @@ func (o *Routes) Decode(b []byte) error {
 	return nil
 }
 
-func (o *Routes) String() string {
+func (o *Routes) Marshal() string {
 	s := make([]string, len(*o))
 	for i, r := range *o {
-		s[i] = r.String()
+		s[i] = r.Marshal()
 	}
 	return strings.Join(s, ",")
+}
+
+func (o *Routes) Unmarshal(b []byte) error {
+	routes := make(Routes, 0)
+	for _, s := range strings.Split(string(b), ",") {
+		if s == "" {
+			continue
+		}
+		route := Route{}
+		if err := route.Unmarshal([]byte(s)); err != nil {
+			return err
+		}
+		routes = append(routes, route)
+	}
+	*o = routes
+	return nil
 }
 
 func (o *DomainName) Encode() []byte {
@@ -368,8 +515,13 @@ func (o *DomainName) Decode(b []byte) error {
 	return nil
 }
 
-func (o *DomainName) String() string {
+func (o *DomainName) Marshal() string {
 	return strings.Join(*o, ".")
+}
+
+func (o *DomainName) Unmarshal(b []byte) error {
+	*o = DomainName(strings.Split(strings.TrimSpace(string(b)), "."))
+	return nil
 }
 
 func (o *DomainNames) Encode() []byte {
@@ -397,12 +549,30 @@ func (o *DomainNames) Decode(b []byte) error {
 	return nil
 }
 
-func (o *DomainNames) String() string {
+func (o *DomainNames) Marshal() string {
 	s := make([]string, len(*o))
 	for i, dn := range *o {
-		s[i] = dn.String()
+		s[i] = dn.Marshal()
 	}
 	return strings.Join(s, ",")
+}
+
+func (o *DomainNames) Unmarshal(b []byte) error {
+	dns := make(DomainNames, 0)
+	for _, s := range strings.Split(strings.TrimSpace(string(b)), ",") {
+		for _, s := range strings.Split(strings.TrimSpace(s), " ") {
+			if s == "" {
+				continue
+			}
+			dn := DomainName{}
+			if err := dn.Unmarshal([]byte(s)); err != nil {
+				return err
+			}
+			dns = append(dns, dn)
+		}
+	}
+	*o = dns
+	return nil
 }
 
 func (o *TimeOffset) Encode() []byte {
@@ -424,8 +594,20 @@ func (o *TimeOffset) Decode(b []byte) error {
 	return nil
 }
 
-func (o *TimeOffset) String() string {
+func (o *TimeOffset) Marshal() string {
 	return time.Duration(*o).String()
+}
+
+func (o *TimeOffset) Unmarshal(b []byte) error {
+	d, err := time.ParseDuration(strings.TrimSpace(string(b)))
+	if err != nil {
+		return err
+	}
+	if int64(d) < 0 {
+		return fmt.Errorf("TimeOffset must not be negative, but actually '%s'", string(b))
+	}
+	*o = TimeOffset(d)
+	return nil
 }
 
 func (o *TimeDuration) Encode() []byte {
@@ -447,8 +629,17 @@ func (o *TimeDuration) Decode(b []byte) error {
 	return nil
 }
 
-func (o *TimeDuration) String() string {
+func (o *TimeDuration) Marshal() string {
 	return time.Duration(*o).String()
+}
+
+func (o *TimeDuration) Unmarshal(b []byte) error {
+	d, err := time.ParseDuration(strings.TrimSpace(string(b)))
+	if err != nil {
+		return err
+	}
+	*o = TimeDuration(d)
+	return nil
 }
 
 func (o *Padding) Encode() []byte {
@@ -459,8 +650,12 @@ func (o *Padding) Decode(b []byte) error {
 	return validateSize(b, 0)
 }
 
-func (o *Padding) String() string {
+func (o *Padding) Marshal() string {
 	return ""
+}
+
+func (o *Padding) Unmarshal(_ []byte) error {
+	return nil
 }
 
 func (o *End) Encode() []byte {
@@ -471,6 +666,10 @@ func (o *End) Decode(b []byte) error {
 	return validateSize(b, 0)
 }
 
-func (o *End) String() string {
+func (o *End) Marshal() string {
 	return ""
+}
+
+func (o *End) Unmarshal(_ []byte) error {
+	return nil
 }
