@@ -90,9 +90,19 @@ func TestDecodeString(t *testing.T) {
 	}
 }
 
-func TestStringString(t *testing.T) {
+func TestMarshalString(t *testing.T) {
 	op := String(filenameString)
-	if op.String() != filenameString {
+	if op.Marshal() != filenameString {
+		t.Error()
+	}
+}
+
+func TestUnmarshalString(t *testing.T) {
+	op := new(String)
+	if err := op.Unmarshal(filenameBytes); err != nil {
+		t.Error(err)
+	}
+	if string(*op) != filenameString {
 		t.Error()
 	}
 }
@@ -131,16 +141,36 @@ func TestDecodeBooleanFalse(t *testing.T) {
 	}
 }
 
-func TestStringBooleanTrue(t *testing.T) {
+func TestMarshalBooleanTrue(t *testing.T) {
 	op := Boolean(true)
-	if op.String() != "true" {
+	if op.Marshal() != "true" {
 		t.Error()
 	}
 }
 
-func TestStringBooleanFalse(t *testing.T) {
+func TestMarshalBooleanFalse(t *testing.T) {
 	op := Boolean(false)
-	if op.String() != "false" {
+	if op.Marshal() != "false" {
+		t.Error()
+	}
+}
+
+func TestUnmarshalBooleanTrue(t *testing.T) {
+	op := new(Boolean)
+	if err := op.Unmarshal([]byte("true")); err != nil {
+		t.Error(err)
+	}
+	if !*op {
+		t.Error()
+	}
+}
+
+func TestUnmarshalBooleanFalse(t *testing.T) {
+	op := new(Boolean)
+	if err := op.Unmarshal([]byte("false")); err != nil {
+		t.Error(err)
+	}
+	if *op {
 		t.Error()
 	}
 }
@@ -162,9 +192,19 @@ func TestDecodeByte(t *testing.T) {
 	}
 }
 
-func TestStringByte(t *testing.T) {
+func TestMarshalByte(t *testing.T) {
 	op := Byte(123)
-	if op.String() != "123" {
+	if op.Marshal() != "123" {
+		t.Error()
+	}
+}
+
+func TestUnmarshalByte(t *testing.T) {
+	op := new(Byte)
+	if err := op.Unmarshal([]byte("123")); err != nil {
+		t.Error(err)
+	}
+	if byte(*op) != 123 {
 		t.Error()
 	}
 }
@@ -186,9 +226,19 @@ func TestDecodeSize(t *testing.T) {
 	}
 }
 
-func TestStringSize(t *testing.T) {
+func TestMarshalSize(t *testing.T) {
 	op := Size(1234)
-	if op.String() != "1234" {
+	if op.Marshal() != "1234" {
+		t.Error()
+	}
+}
+
+func TestUnmarshalSize(t *testing.T) {
+	op := new(Size)
+	if err := op.Unmarshal([]byte("1234")); err != nil {
+		t.Error(err)
+	}
+	if uint16(*op) != 1234 {
 		t.Error()
 	}
 }
@@ -213,9 +263,22 @@ func TestDecodeSizes(t *testing.T) {
 	}
 }
 
-func TestStringSizes(t *testing.T) {
+func TestMarshalSizes(t *testing.T) {
 	op := Sizes{1234, 5678}
-	if op.String() != "1234,5678" {
+	if op.Marshal() != "1234,5678" {
+		t.Error()
+	}
+}
+
+func TestUnmarshalSizes(t *testing.T) {
+	op := new(Sizes)
+	if err := op.Unmarshal([]byte("1234, 5678")); err != nil {
+		t.Error(err)
+	}
+	if uint16((*op)[0]) != 1234 {
+		t.Error()
+	}
+	if uint16((*op)[1]) != 5678 {
 		t.Error()
 	}
 }
@@ -237,9 +300,19 @@ func TestDecodeIPv4(t *testing.T) {
 	}
 }
 
-func TestStringIPv4(t *testing.T) {
+func TestMarshalIPv4(t *testing.T) {
 	op := IPv4(ip)
-	if op.String() != ipString {
+	if op.Marshal() != ipString {
+		t.Error()
+	}
+}
+
+func TestUnmarshalIPv4(t *testing.T) {
+	op := new(IPv4)
+	if err := op.Unmarshal([]byte(ipString)); err != nil {
+		t.Error(err)
+	}
+	if !(net.IP(*op)).Equal(ip) {
 		t.Error()
 	}
 }
@@ -263,10 +336,22 @@ func TestDecodeIPv4s(t *testing.T) {
 	}
 }
 
-func TestStringIPv4s(t *testing.T) {
+func TestMarshalIPv4s(t *testing.T) {
 	op := IPv4s(ips)
-	if op.String() != ipsString {
+	if op.Marshal() != ipsString {
 		t.Error()
+	}
+}
+
+func TestUnmarshalIPv4s(t *testing.T) {
+	op := new(IPv4s)
+	if err := op.Unmarshal([]byte(ipsString)); err != nil {
+		t.Error(err)
+	}
+	for i, ip := range *op {
+		if !net.IP(ip).Equal(net.IP(ips[i])) {
+			t.Error()
+		}
 	}
 }
 
@@ -289,10 +374,22 @@ func TestDecodeIPv4Pair(t *testing.T) {
 	}
 }
 
-func TestStringIPv4Pair(t *testing.T) {
+func TestMarshalIPv4Pair(t *testing.T) {
 	op := IPv4Pair{ipPair[0], ipPair[1]}
-	if op.String() != ipPairString {
+	if op.Marshal() != ipPairString {
 		t.Error()
+	}
+}
+
+func TestUnmarshalIPv4Pair(t *testing.T) {
+	op := new(IPv4Pair)
+	if err := op.Unmarshal([]byte(ipPairString)); err != nil {
+		t.Error(err)
+	}
+	for i, ip := range *op {
+		if !net.IP(ip).Equal(net.IP(ipPair[i])) {
+			t.Error()
+		}
 	}
 }
 
@@ -318,10 +415,25 @@ func TestDecodeIPv4Pairs(t *testing.T) {
 	}
 }
 
-func TestStringIPv4Pairs(t *testing.T) {
+func TestMarshalIPv4Pairs(t *testing.T) {
 	op := IPv4Pairs(ipPairs)
-	if op.String() != ipPairsString {
+	if op.Marshal() != ipPairsString {
 		t.Error()
+	}
+}
+
+func TestUnmarshalIPv4Pairs(t *testing.T) {
+	op := new(IPv4Pairs)
+	if err := op.Unmarshal([]byte(ipPairsString)); err != nil {
+		t.Error(err)
+	}
+	for i, p := range *op {
+		if !net.IP(p[0]).Equal(net.IP(ipPairs[i][0])) {
+			t.Error()
+		}
+		if !net.IP(p[1]).Equal(net.IP(ipPairs[i][1])) {
+			t.Error()
+		}
 	}
 }
 
@@ -342,9 +454,19 @@ func TestDecodeRoute(t *testing.T) {
 	}
 }
 
-func TestStringRoute(t *testing.T) {
+func TestMarshalRoute(t *testing.T) {
 	op := route
-	if op.String() != routeString {
+	if op.Marshal() != routeString {
+		t.Error()
+	}
+}
+
+func TestUnmarshalRoute(t *testing.T) {
+	op := new(Route)
+	if err := op.Unmarshal([]byte(routeString)); err != nil {
+		t.Error(err)
+	}
+	if bytes.Compare(op.Encode(), route.Encode()) != 0 {
 		t.Error()
 	}
 }
@@ -366,10 +488,20 @@ func TestDecodeRoutes(t *testing.T) {
 	}
 }
 
-func TestStringRoutes(t *testing.T) {
+func TestMarshalRoutes(t *testing.T) {
 	op := routes
-	if op.String() != routesString {
+	if op.Marshal() != routesString {
 		t.Log(op)
+		t.Error()
+	}
+}
+
+func TestUnmarshalRoutes(t *testing.T) {
+	op := new(Routes)
+	if err := op.Unmarshal([]byte(routesString)); err != nil {
+		t.Error(err)
+	}
+	if bytes.Compare(op.Encode(), routes.Encode()) != 0 {
 		t.Error()
 	}
 }
@@ -393,10 +525,22 @@ func TestDecodeDomainName(t *testing.T) {
 	}
 }
 
-func TestStringDomainName(t *testing.T) {
+func TestMarshalDomainName(t *testing.T) {
 	op := domainName
-	if op.String() != domainNameString {
+	if op.Marshal() != domainNameString {
 		t.Error()
+	}
+}
+
+func TestUnmarshalDomainName(t *testing.T) {
+	op := new(DomainName)
+	if err := op.Unmarshal([]byte(domainNameString)); err != nil {
+		t.Error(err)
+	}
+	for i, s := range *op {
+		if s != domainName[i] {
+			t.Error()
+		}
 	}
 }
 
@@ -413,16 +557,28 @@ func TestDecodeDomainNames(t *testing.T) {
 		t.Error(err)
 	}
 	for i, dn := range *op {
-		if dn.String() != domainNames[i].String() {
+		if dn.Marshal() != domainNames[i].Marshal() {
 			t.Error()
 		}
 	}
 }
 
-func TestStringDomainNames(t *testing.T) {
+func TestMarshalDomainNames(t *testing.T) {
 	op := domainNames
-	if op.String() != domainNamesString {
+	if op.Marshal() != domainNamesString {
 		t.Error()
+	}
+}
+
+func TestUnmarshalDomainNames(t *testing.T) {
+	op := new(DomainNames)
+	if err := op.Unmarshal([]byte(domainNamesString)); err != nil {
+		t.Error(err)
+	}
+	for i, dn := range *op {
+		if dn.Marshal() != domainNames[i].Marshal() {
+			t.Error()
+		}
 	}
 }
 
@@ -443,9 +599,19 @@ func TestDecodeTimeOffset(t *testing.T) {
 	}
 }
 
-func TestStringTimeOffset(t *testing.T) {
+func TestMarshalTimeOffset(t *testing.T) {
 	op := TimeOffset(timeOffset)
-	if op.String() != timeOffsetString {
+	if op.Marshal() != timeOffsetString {
+		t.Error()
+	}
+}
+
+func TestUnmarshalTimeOffset(t *testing.T) {
+	op := new(TimeOffset)
+	if err := op.Unmarshal([]byte(timeOffsetString)); err != nil {
+		t.Error(err)
+	}
+	if *op != TimeOffset(timeOffset) {
 		t.Error()
 	}
 }
@@ -467,9 +633,19 @@ func TestDecodeTimeDuration(t *testing.T) {
 	}
 }
 
-func TestStringTimeDuration(t *testing.T) {
+func TestMarshalTimeDuration(t *testing.T) {
 	op := TimeDuration(timeDuration)
-	if op.String() != timeDurationString {
+	if op.Marshal() != timeDurationString {
+		t.Error()
+	}
+}
+
+func TestUnmarshalTimeDuration(t *testing.T) {
+	op := new(TimeDuration)
+	if err := op.Unmarshal([]byte(timeDurationString)); err != nil {
+		t.Error(err)
+	}
+	if *op != TimeDuration(timeDuration) {
 		t.Error()
 	}
 }
@@ -488,10 +664,17 @@ func TestDecodePadding(t *testing.T) {
 	}
 }
 
-func TestStringPadding(t *testing.T) {
+func TestMarshalPadding(t *testing.T) {
 	op := new(Padding)
-	if op.String() != "" {
+	if op.Marshal() != "" {
 		t.Error()
+	}
+}
+
+func TestUnmarshalPadding(t *testing.T) {
+	op := new(Padding)
+	if err := op.Unmarshal([]byte{}); err != nil {
+		t.Error(err)
 	}
 }
 
@@ -509,9 +692,16 @@ func TestDecodeEnd(t *testing.T) {
 	}
 }
 
-func TestStringEnd(t *testing.T) {
+func TestMarshalEnd(t *testing.T) {
 	op := new(End)
-	if op.String() != "" {
+	if op.Marshal() != "" {
 		t.Error()
+	}
+}
+
+func TestUnmarshalEnd(t *testing.T) {
+	op := new(End)
+	if err := op.Unmarshal([]byte{}); err != nil {
+		t.Error(err)
 	}
 }
