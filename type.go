@@ -1,6 +1,7 @@
 package dhcpop
 
 import (
+	"bytes"
 	"fmt"
 	"net"
 	"strconv"
@@ -11,7 +12,7 @@ import (
 type Option interface {
 	Encode() []byte
 	Decode([]byte) error
-	Marshal() string
+	Marshal() []byte
 	Unmarshal([]byte) error
 }
 
@@ -61,8 +62,8 @@ func (o *String) Decode(b []byte) error {
 	return nil
 }
 
-func (o *String) Marshal() string {
-	return string(*o)
+func (o *String) Marshal() []byte {
+	return []byte(*o)
 }
 
 func (o *String) Unmarshal(b []byte) error {
@@ -91,11 +92,11 @@ func (o *Boolean) Decode(b []byte) error {
 	return nil
 }
 
-func (o *Boolean) Marshal() string {
+func (o *Boolean) Marshal() []byte {
 	if *o {
-		return "true"
+		return []byte("true")
 	}
-	return "false"
+	return []byte("false")
 }
 
 func (o *Boolean) Unmarshal(b []byte) error {
@@ -120,8 +121,8 @@ func (o *Byte) Decode(b []byte) error {
 	return nil
 }
 
-func (o *Byte) Marshal() string {
-	return strconv.Itoa(int(*o))
+func (o *Byte) Marshal() []byte {
+	return []byte(strconv.Itoa(int(*o)))
 }
 
 func (o *Byte) Unmarshal(b []byte) error {
@@ -148,8 +149,8 @@ func (o *Size) Decode(b []byte) error {
 	return nil
 }
 
-func (o *Size) Marshal() string {
-	return strconv.Itoa(int(*o))
+func (o *Size) Marshal() []byte {
+	return []byte(strconv.Itoa(int(*o)))
 }
 
 func (o *Size) Unmarshal(b []byte) error {
@@ -188,12 +189,12 @@ func (o *Sizes) Decode(b []byte) error {
 	return nil
 }
 
-func (o *Sizes) Marshal() string {
-	s := make([]string, len(*o))
+func (o *Sizes) Marshal() []byte {
+	s := make([][]byte, len(*o))
 	for i, n := range *o {
 		s[i] = n.Marshal()
 	}
-	return strings.Join(s, ",")
+	return bytes.Join(s, []byte(","))
 }
 
 func (o *Sizes) Unmarshal(b []byte) error {
@@ -226,8 +227,8 @@ func (o *IPv4) Decode(b []byte) error {
 	return nil
 }
 
-func (o *IPv4) Marshal() string {
-	return net.IP(*o).String()
+func (o *IPv4) Marshal() []byte {
+	return []byte(net.IP(*o).String())
 }
 
 func (o *IPv4) Unmarshal(b []byte) error {
@@ -266,12 +267,12 @@ func (o *IPv4s) Decode(b []byte) error {
 	return nil
 }
 
-func (o *IPv4s) Marshal() string {
-	s := make([]string, len(*o))
+func (o *IPv4s) Marshal() []byte {
+	s := make([][]byte, len(*o))
 	for i, ip := range *o {
 		s[i] = ip.Marshal()
 	}
-	return strings.Join(s, ",")
+	return bytes.Join(s, []byte(","))
 }
 
 func (o *IPv4s) Unmarshal(b []byte) error {
@@ -311,12 +312,12 @@ func (o *IPv4Pair) Decode(b []byte) error {
 	return nil
 }
 
-func (o *IPv4Pair) Marshal() string {
-	s := make([]string, len(*o))
+func (o *IPv4Pair) Marshal() []byte {
+	s := make([][]byte, len(*o))
 	for i, ip := range *o {
 		s[i] = ip.Marshal()
 	}
-	return strings.Join(s, " ")
+	return bytes.Join(s, []byte(" "))
 }
 
 func (o *IPv4Pair) Unmarshal(b []byte) error {
@@ -362,12 +363,12 @@ func (o *IPv4Pairs) Decode(b []byte) error {
 	return nil
 }
 
-func (o *IPv4Pairs) Marshal() string {
-	s := make([]string, len(*o))
+func (o *IPv4Pairs) Marshal() []byte {
+	s := make([][]byte, len(*o))
 	for i, p := range *o {
 		s[i] = p.Marshal()
 	}
-	return strings.Join(s, ",")
+	return bytes.Join(s, []byte(","))
 }
 
 func (o *IPv4Pairs) Unmarshal(b []byte) error {
@@ -417,8 +418,8 @@ func (o *Route) Decode(b []byte) error {
 	return nil
 }
 
-func (o *Route) Marshal() string {
-	return fmt.Sprintf("%s %s", o.Source.String(), o.Destination.String())
+func (o *Route) Marshal() []byte {
+	return []byte(fmt.Sprintf("%s %s", o.Source.String(), o.Destination.String()))
 }
 
 func (o *Route) Unmarshal(b []byte) error {
@@ -463,12 +464,12 @@ func (o *Routes) Decode(b []byte) error {
 	return nil
 }
 
-func (o *Routes) Marshal() string {
-	s := make([]string, len(*o))
+func (o *Routes) Marshal() []byte {
+	s := make([][]byte, len(*o))
 	for i, r := range *o {
 		s[i] = r.Marshal()
 	}
-	return strings.Join(s, ",")
+	return bytes.Join(s, []byte(","))
 }
 
 func (o *Routes) Unmarshal(b []byte) error {
@@ -515,8 +516,8 @@ func (o *DomainName) Decode(b []byte) error {
 	return nil
 }
 
-func (o *DomainName) Marshal() string {
-	return strings.Join(*o, ".")
+func (o *DomainName) Marshal() []byte {
+	return []byte(strings.Join(*o, "."))
 }
 
 func (o *DomainName) Unmarshal(b []byte) error {
@@ -549,12 +550,12 @@ func (o *DomainNames) Decode(b []byte) error {
 	return nil
 }
 
-func (o *DomainNames) Marshal() string {
-	s := make([]string, len(*o))
+func (o *DomainNames) Marshal() []byte {
+	s := make([][]byte, len(*o))
 	for i, dn := range *o {
 		s[i] = dn.Marshal()
 	}
-	return strings.Join(s, ",")
+	return bytes.Join(s, []byte(","))
 }
 
 func (o *DomainNames) Unmarshal(b []byte) error {
@@ -594,8 +595,8 @@ func (o *TimeOffset) Decode(b []byte) error {
 	return nil
 }
 
-func (o *TimeOffset) Marshal() string {
-	return time.Duration(*o).String()
+func (o *TimeOffset) Marshal() []byte {
+	return []byte(time.Duration(*o).String())
 }
 
 func (o *TimeOffset) Unmarshal(b []byte) error {
@@ -629,8 +630,8 @@ func (o *TimeDuration) Decode(b []byte) error {
 	return nil
 }
 
-func (o *TimeDuration) Marshal() string {
-	return time.Duration(*o).String()
+func (o *TimeDuration) Marshal() []byte {
+	return []byte(time.Duration(*o).String())
 }
 
 func (o *TimeDuration) Unmarshal(b []byte) error {
@@ -650,8 +651,8 @@ func (o *Padding) Decode(b []byte) error {
 	return validateSize(b, 0)
 }
 
-func (o *Padding) Marshal() string {
-	return ""
+func (o *Padding) Marshal() []byte {
+	return []byte{}
 }
 
 func (o *Padding) Unmarshal(_ []byte) error {
@@ -666,8 +667,8 @@ func (o *End) Decode(b []byte) error {
 	return validateSize(b, 0)
 }
 
-func (o *End) Marshal() string {
-	return ""
+func (o *End) Marshal() []byte {
+	return []byte{}
 }
 
 func (o *End) Unmarshal(_ []byte) error {

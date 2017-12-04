@@ -92,7 +92,7 @@ func TestDecodeString(t *testing.T) {
 
 func TestMarshalString(t *testing.T) {
 	op := String(filenameString)
-	if op.Marshal() != filenameString {
+	if string(string(op.Marshal())) != filenameString {
 		t.Error()
 	}
 }
@@ -143,14 +143,14 @@ func TestDecodeBooleanFalse(t *testing.T) {
 
 func TestMarshalBooleanTrue(t *testing.T) {
 	op := Boolean(true)
-	if op.Marshal() != "true" {
+	if string(op.Marshal()) != "true" {
 		t.Error()
 	}
 }
 
 func TestMarshalBooleanFalse(t *testing.T) {
 	op := Boolean(false)
-	if op.Marshal() != "false" {
+	if string(op.Marshal()) != "false" {
 		t.Error()
 	}
 }
@@ -194,7 +194,7 @@ func TestDecodeByte(t *testing.T) {
 
 func TestMarshalByte(t *testing.T) {
 	op := Byte(123)
-	if op.Marshal() != "123" {
+	if string(op.Marshal()) != "123" {
 		t.Error()
 	}
 }
@@ -228,7 +228,7 @@ func TestDecodeSize(t *testing.T) {
 
 func TestMarshalSize(t *testing.T) {
 	op := Size(1234)
-	if op.Marshal() != "1234" {
+	if string(op.Marshal()) != "1234" {
 		t.Error()
 	}
 }
@@ -265,7 +265,7 @@ func TestDecodeSizes(t *testing.T) {
 
 func TestMarshalSizes(t *testing.T) {
 	op := Sizes{1234, 5678}
-	if op.Marshal() != "1234,5678" {
+	if string(op.Marshal()) != "1234,5678" {
 		t.Error()
 	}
 }
@@ -302,7 +302,7 @@ func TestDecodeIPv4(t *testing.T) {
 
 func TestMarshalIPv4(t *testing.T) {
 	op := IPv4(ip)
-	if op.Marshal() != ipString {
+	if string(op.Marshal()) != ipString {
 		t.Error()
 	}
 }
@@ -338,7 +338,7 @@ func TestDecodeIPv4s(t *testing.T) {
 
 func TestMarshalIPv4s(t *testing.T) {
 	op := IPv4s(ips)
-	if op.Marshal() != ipsString {
+	if string(op.Marshal()) != ipsString {
 		t.Error()
 	}
 }
@@ -376,7 +376,7 @@ func TestDecodeIPv4Pair(t *testing.T) {
 
 func TestMarshalIPv4Pair(t *testing.T) {
 	op := IPv4Pair{ipPair[0], ipPair[1]}
-	if op.Marshal() != ipPairString {
+	if string(op.Marshal()) != ipPairString {
 		t.Error()
 	}
 }
@@ -417,7 +417,7 @@ func TestDecodeIPv4Pairs(t *testing.T) {
 
 func TestMarshalIPv4Pairs(t *testing.T) {
 	op := IPv4Pairs(ipPairs)
-	if op.Marshal() != ipPairsString {
+	if string(op.Marshal()) != ipPairsString {
 		t.Error()
 	}
 }
@@ -456,7 +456,7 @@ func TestDecodeRoute(t *testing.T) {
 
 func TestMarshalRoute(t *testing.T) {
 	op := route
-	if op.Marshal() != routeString {
+	if string(op.Marshal()) != routeString {
 		t.Error()
 	}
 }
@@ -490,7 +490,7 @@ func TestDecodeRoutes(t *testing.T) {
 
 func TestMarshalRoutes(t *testing.T) {
 	op := routes
-	if op.Marshal() != routesString {
+	if string(op.Marshal()) != routesString {
 		t.Log(op)
 		t.Error()
 	}
@@ -527,7 +527,7 @@ func TestDecodeDomainName(t *testing.T) {
 
 func TestMarshalDomainName(t *testing.T) {
 	op := domainName
-	if op.Marshal() != domainNameString {
+	if string(op.Marshal()) != domainNameString {
 		t.Error()
 	}
 }
@@ -557,7 +557,7 @@ func TestDecodeDomainNames(t *testing.T) {
 		t.Error(err)
 	}
 	for i, dn := range *op {
-		if dn.Marshal() != domainNames[i].Marshal() {
+		if string(dn.Marshal()) != string(domainNames[i].Marshal()) {
 			t.Error()
 		}
 	}
@@ -565,7 +565,7 @@ func TestDecodeDomainNames(t *testing.T) {
 
 func TestMarshalDomainNames(t *testing.T) {
 	op := domainNames
-	if op.Marshal() != domainNamesString {
+	if string(op.Marshal()) != domainNamesString {
 		t.Error()
 	}
 }
@@ -576,7 +576,7 @@ func TestUnmarshalDomainNames(t *testing.T) {
 		t.Error(err)
 	}
 	for i, dn := range *op {
-		if dn.Marshal() != domainNames[i].Marshal() {
+		if string(dn.Marshal()) != string(domainNames[i].Marshal()) {
 			t.Error()
 		}
 	}
@@ -601,7 +601,7 @@ func TestDecodeTimeOffset(t *testing.T) {
 
 func TestMarshalTimeOffset(t *testing.T) {
 	op := TimeOffset(timeOffset)
-	if op.Marshal() != timeOffsetString {
+	if string(op.Marshal()) != timeOffsetString {
 		t.Error()
 	}
 }
@@ -635,7 +635,7 @@ func TestDecodeTimeDuration(t *testing.T) {
 
 func TestMarshalTimeDuration(t *testing.T) {
 	op := TimeDuration(timeDuration)
-	if op.Marshal() != timeDurationString {
+	if string(op.Marshal()) != timeDurationString {
 		t.Error()
 	}
 }
@@ -666,7 +666,7 @@ func TestDecodePadding(t *testing.T) {
 
 func TestMarshalPadding(t *testing.T) {
 	op := new(Padding)
-	if op.Marshal() != "" {
+	if string(op.Marshal()) != "" {
 		t.Error()
 	}
 }
@@ -694,7 +694,7 @@ func TestDecodeEnd(t *testing.T) {
 
 func TestMarshalEnd(t *testing.T) {
 	op := new(End)
-	if op.Marshal() != "" {
+	if string(op.Marshal()) != "" {
 		t.Error()
 	}
 }
