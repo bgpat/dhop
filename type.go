@@ -408,6 +408,9 @@ func (o *Route) Decode(b []byte) error {
 	}
 	srcIP := make([]byte, 4)
 	for i := 1; i <= l; i++ {
+		if i > 4 {
+			return fmt.Errorf("invalid IPv4: %v", b[1:l])
+		}
 		srcIP[i-1] = b[i]
 	}
 	o.Source = net.IPNet{
@@ -509,6 +512,9 @@ func (o *DomainName) Decode(b []byte) error {
 		a = a[1:]
 		if l == 0 {
 			break
+		}
+		if err := validateMinimumSize(a, int(l)); err != nil {
+			return err
 		}
 		*o = append(*o, string(a[:l]))
 		a = a[l:]
