@@ -1,4 +1,4 @@
-package dhcpop
+package dhop
 
 import (
 	"bytes"

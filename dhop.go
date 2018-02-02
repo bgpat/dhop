@@ -1,4 +1,4 @@
-package dhcpop
+package dhop
 
 func Decode(code byte, b []byte) (Option, error) {
 	switch code {
