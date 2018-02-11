@@ -9,13 +9,6 @@ import (
 	"time"
 )
 
-type Option interface {
-	Encode() []byte
-	Decode([]byte) error
-	Marshal() []byte
-	Unmarshal([]byte) error
-}
-
 type String string
 
 type Boolean bool
