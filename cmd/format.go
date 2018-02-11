@@ -76,10 +76,6 @@ func (f *formatType) Decode(src []byte) ([]byte, error) {
 	case FORMAT_TYPE_HEX:
 		var arr [][]byte
 		if separator == "" {
-			if len(src)%2 == 1 {
-				return nil, fmt.Errorf("invalid input \"%s\"", src)
-
-			}
 			arr = make([][]byte, len(src)/2)
 			for i := 0; i < len(src)/2; i++ {
 				arr[i] = src[i*2 : (i+1)*2]
@@ -95,6 +91,7 @@ func (f *formatType) Decode(src []byte) ([]byte, error) {
 			}
 			buf = append(buf, byte(n))
 		}
+		return buf, nil
 	case FORMAT_TYPE_BASE64:
 		dst := make([]byte, base64.StdEncoding.DecodedLen(len(src)))
 		dst = make([]byte, len(src))
