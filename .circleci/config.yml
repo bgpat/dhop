@@ -8,9 +8,10 @@ jobs:
       GOARCH: amd64
       GOOS: linux
     steps:
-      #      - restore_cache:
-      #          keys:
-      #            - go-bin
+      - run: apk add -U tar
+      - restore_cache:
+          keys:
+            - go-bin
       - run: go get github.com/golang/dep/cmd/dep
       - run: go get github.com/tcnksm/ghr
       - save_cache:
@@ -34,7 +35,7 @@ jobs:
       - persist_to_workspace:
           root: /go/src/github.com/bgpat/dhop/cmd
           paths:
-            - bin
+            - bin/*
   deploy:
     docker:
       - image: circleci/golang:1.8
