@@ -1,5 +1,9 @@
 package dhop
 
+import (
+	"fmt"
+)
+
 type Code byte
 
 func (c *Code) String() string {
@@ -319,7 +323,7 @@ func (c *Code) String() string {
 		return "End"
 	}
 	if 224 <= *c && *c <= 254 {
-		return "Reserved (Private Use)"
+		return fmt.Sprintf("Reserved (%d)", *c)
 	}
-	return "N/A"
+	return fmt.Sprintf("N/A (%d)", *c)
 }
