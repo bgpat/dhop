@@ -8,9 +8,9 @@ jobs:
       GOARCH: amd64
       GOOS: linux
     steps:
-      #      - restore_cache:
-      #          keys:
-      #            - go-bin
+      - restore_cache:
+          keys:
+            - go-bin
       - run: go get github.com/golang/dep/cmd/dep
       - run: go get github.com/tcnksm/ghr
       - save_cache:
