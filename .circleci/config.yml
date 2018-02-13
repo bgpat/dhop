@@ -8,10 +8,9 @@ jobs:
       GOARCH: amd64
       GOOS: linux
     steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - go-bin
+      #      - restore_cache:
+      #          keys:
+      #            - go-bin
       - run: go get github.com/golang/dep/cmd/dep
       - run: go get github.com/tcnksm/ghr
       - save_cache:
@@ -21,6 +20,7 @@ jobs:
             - /go/src/github.com/golang/dep/cmd/dep
             - /go/src/github.com/tcnksm/ghr
           key: go-bin
+      - checkout
       - restore_cache:
           keys:
             - dhop-dep-{{ checksum "cmd/Gopkg.lock" }}
