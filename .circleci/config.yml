@@ -25,7 +25,7 @@ jobs:
           keys:
             - dhop-dep-{{ checksum "cmd/Gopkg.lock" }}
             - dhop-dep-
-      - run: dep ensure
+      - run: cd cmd && dep ensure && cd ..
       - save_cache:
           paths:
             - /go/src/github.com/{{ORG_NAME}}/{{REPO_NAME}}/cmd/vendor
