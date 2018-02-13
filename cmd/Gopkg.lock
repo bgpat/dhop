@@ -2,12 +2,6 @@
 
 
 [[projects]]
-  branch = "master"
-  name = "github.com/bgpat/dhop"
-  packages = ["."]
-  revision = "640d4727366092c8befb0bae21e4879182991127"
-
-[[projects]]
   name = "github.com/inconshreveable/mousetrap"
   packages = ["."]
   revision = "76626ae9c91c4f2a10f34cad8ce83ea42c93bb75"
@@ -28,6 +22,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "7510915f7929fa04cf0a226c57b2b67ee91e712a816a304f39d464ae39f8559a"
+  inputs-digest = "9e37306e8a0787886cfdfb315912b47a36328f19c55bca11bb043640de07e924"
   solver-name = "gps-cdcl"
   solver-version = 1
