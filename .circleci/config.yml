@@ -31,9 +31,8 @@ jobs:
             - /go/src/github.com/bgpat/dhop/cmd/vendor
           key: dhop-dep-{{ checksum "cmd/Gopkg.lock" }}
       - run: go build --ldflags '-s -w' -o "bin/dhop-${GOARCH}-${GOOS}"
-      - run: cd ..
       - persist_to_workspace:
-          root: cmd
+          root: /go/src/github.com/bgpat/dhop/cmd
           paths:
             - bin
   deploy:
