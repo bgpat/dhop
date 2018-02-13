@@ -8,29 +8,8 @@ jobs:
       GOARCH: amd64
       GOOS: linux
     steps:
-      - run: apk add -U tar
-      - restore_cache:
-          keys:
-            - go-bin
       - run: go get github.com/golang/dep/cmd/dep
-      - run: go get github.com/tcnksm/ghr
-      - save_cache:
-          paths:
-            - /go/bin/dep
-            - /go/bin/ghr
-            - /go/src/github.com/golang/dep/cmd/dep
-            - /go/src/github.com/tcnksm/ghr
-          key: go-bin
-      - checkout
-      - restore_cache:
-          keys:
-            - dhop-dep-{{ checksum "cmd/Gopkg.lock" }}
-            - dhop-dep-
       - run: cd cmd && dep ensure
-      - save_cache:
-          paths:
-            - /go/src/github.com/bgpat/dhop/cmd/vendor
-          key: dhop-dep-{{ checksum "cmd/Gopkg.lock" }}
       - run: go build --ldflags '-s -w' -o "bin/dhop-${GOARCH}-${GOOS}"
       - persist_to_workspace:
           root: /go/src/github.com/bgpat/dhop/cmd
@@ -43,6 +22,7 @@ jobs:
     steps:
       - attach_workspace:
           at: /go/src/github.com/bgpat/dhop/cmd/bin
+      - run: go get github.com/tcnksm/ghr
       - run: ghr -t $GITHUB_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME --replace $CIRCLE_TAG bin/
 workflows:
   version: 2
