@@ -3,7 +3,7 @@ jobs:
   build:
     docker:
       - image: circleci/golang:1.8
-    working_directory: /go/src/github.com/{{ORG_NAME}}/{{REPO_NAME}}
+    working_directory: /go/src/github.com/bgpat/dhop
     environment:
       GOARCH: amd64
       GOOS: linux
@@ -28,7 +28,7 @@ jobs:
       - run: cd cmd && dep ensure
       - save_cache:
           paths:
-            - /go/src/github.com/{{ORG_NAME}}/{{REPO_NAME}}/cmd/vendor
+            - /go/src/github.com/bgpat/dhop/cmd/vendor
           key: dhop-dep-{{ checksum "cmd/Gopkg.lock" }}
       - run: go build --ldflags '-s -w' -o "bin/dhop-${GOARCH}-${GOOS}"
       - persist_to_workspace:
@@ -38,10 +38,10 @@ jobs:
   deploy:
     docker:
       - image: circleci/golang:1.8
-    working_directory: /go/src/github.com/{{ORG_NAME}}/{{REPO_NAME}}
+    working_directory: /go/src/github.com/bgpat/dhop
     steps:
       - attach_workspace:
-          at: /go/src/github.com/{{ORG_NAME}}/{{REPO_NAME}}/cmd/bin
+          at: /go/src/github.com/bgpat/dhop/cmd/bin
       - run: ghr -t $GITHUB_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME --replace $CIRCLE_TAG bin/
 workflows:
   version: 2
