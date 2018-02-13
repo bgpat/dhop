@@ -10,12 +10,13 @@ jobs:
     steps:
       - run: go get github.com/golang/dep/cmd/dep
       - checkout
-      - run: cd cmd && dep ensure
+      - working_directory: cmd
+      - run: dep ensure
       - run: go build --ldflags '-s -w' -o "bin/dhop-${GOARCH}-${GOOS}" -v
       - persist_to_workspace:
-          root: cmd
+          root: bin
           paths:
-            - bin/*
+            - *
   deploy:
     docker:
       - image: circleci/golang:1.8
