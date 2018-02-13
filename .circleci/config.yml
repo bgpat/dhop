@@ -13,7 +13,7 @@ jobs:
       - run: cd cmd && dep ensure
       - run: go build --ldflags '-s -w' -o "bin/dhop-${GOARCH}-${GOOS}"
       - persist_to_workspace:
-          root: /go/src/github.com/bgpat/dhop/cmd
+          root: cmd
           paths:
             - bin/*
   deploy:
