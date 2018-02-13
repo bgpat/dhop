@@ -15,7 +15,8 @@ jobs:
       - run: go get github.com/tcnksm/ghr
       - save_cache:
           paths:
-            - /go/bin
+            - /go/bin/dep
+            - /go/bin/ghr
             - /go/src/github.com/golang/dep/cmd/dep
             - /go/src/github.com/tcnksm/ghr
           key: go-bin
