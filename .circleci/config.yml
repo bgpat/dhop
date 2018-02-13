@@ -25,12 +25,12 @@ jobs:
           keys:
             - dhop-dep-{{ checksum "cmd/Gopkg.lock" }}
             - dhop-dep-
-      - run: cd cmd && dep ensure && cd ..
+      - run: cd cmd && dep ensure
       - save_cache:
           paths:
             - /go/src/github.com/{{ORG_NAME}}/{{REPO_NAME}}/cmd/vendor
           key: dhop-dep-{{ checksum "cmd/Gopkg.lock" }}
-      - run: go build --ldflags '-s -w' -o "bin/dhop-${GOARCH}-${GOOS}" cmd/*.go
+      - run: go build --ldflags '-s -w' -o "bin/dhop-${GOARCH}-${GOOS}"
       - persist_to_workspace:
           root: cmd
           paths:
