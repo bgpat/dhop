@@ -1,0 +1,47 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/golang:1.8
+    working_directory: /go/src/github.com/bgpat/dhop
+    environment:
+      GOARCH: amd64
+      GOOS: linux
+    steps:
+      - run: go get github.com/golang/dep/cmd/dep
+      - checkout
+      - run:
+          command: dep ensure
+          working_directory: cmd
+      - run:
+          command: go build --ldflags '-s -w' -o "bin/dhop-${GOARCH}-${GOOS}" -v
+          working_directory: cmd
+      - persist_to_workspace:
+          root: cmd
+          paths:
+            - bin/*
+  deploy:
+    docker:
+      - image: circleci/golang:1.8
+    working_directory: /go/src/github.com/bgpat/dhop
+    steps:
+      - attach_workspace:
+          at: /go/src/github.com/bgpat/dhop/cmd
+      - run: go get github.com/tcnksm/ghr
+      - run: ghr -t $GITHUB_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME -replace $CIRCLE_TAG cmd/bin
+workflows:
+  version: 2
+  build-n-deploy:
+    jobs:
+      - build:
+          filters:
+            tags:
+              only: /.*/
+      - deploy:
+          requires:
+            - build
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
