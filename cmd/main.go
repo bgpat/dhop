@@ -63,12 +63,12 @@ func readInput() (input []byte, err error) {
 	return inputFormat.Decode(input)
 }
 
-func writeOutput(output []byte, code byte) error {
+func writeOutput(output []byte, code dhop.Code) error {
 	encoded, err := outputFormat.Encode(output)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%d: %s\n", code, encoded)
+	fmt.Printf("%v: %s\n", code.String(), encoded)
 	return nil
 }
 
@@ -77,7 +77,7 @@ func encode(input []byte, code byte) error {
 	if err != nil {
 		return err
 	}
-	return writeOutput(op.Encode(), code)
+	return writeOutput(op.Encode(), op.Code)
 }
 
 func decode(input []byte, code byte) error {
@@ -85,7 +85,7 @@ func decode(input []byte, code byte) error {
 	if err != nil {
 		return err
 	}
-	return writeOutput(op.Marshal(), code)
+	return writeOutput(op.Marshal(), op.Code)
 }
 
 func execute(cmd *cobra.Command, args []string) error {
