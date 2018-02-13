@@ -30,6 +30,7 @@ With no options, dhop reads text data from stdin and writes available encoded da
 	inputFormat  formatType
 	outputFormat formatType
 	separator    = " "
+	printNumber  bool
 )
 
 func init() {
@@ -42,6 +43,7 @@ func init() {
 	rootCmd.PersistentFlags().VarP(&inputFormat, "input-format", "f", "input format")
 	rootCmd.PersistentFlags().VarP(&outputFormat, "output-format", "t", "output format")
 	rootCmd.PersistentFlags().StringVarP(&separator, "separator", "s", " ", "separator for hex format")
+	rootCmd.PersistentFlags().BoolVarP(&printNumber, "number", "n", false, "print option code number")
 }
 
 func main() {
@@ -68,7 +70,11 @@ func writeOutput(output []byte, code dhop.Code) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%v: %s\n", code.String(), encoded)
+	if printNumber {
+		fmt.Printf("%d: %s\n", code, encoded)
+	} else {
+		fmt.Printf("%s: %s\n", code.String(), encoded)
+	}
 	return nil
 }
 
