@@ -52,7 +52,7 @@ func Decode(code byte, b []byte) (Option, error) {
 	}
 	return Option{
 		OptionData: o,
-		Code:       code,
+		Code:       Code(code),
 	}, err
 }
 
@@ -108,6 +108,6 @@ func Unmarshal(code byte, b []byte) (Option, error) {
 	}
 	return Option{
 		OptionData: o,
-		Code:       code,
+		Code:       Code(code),
 	}, err
 }

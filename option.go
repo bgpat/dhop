@@ -2,7 +2,7 @@ package dhop
 
 type Option struct {
 	OptionData
-	Code byte
+	Code Code
 }
 
 type OptionData interface {
